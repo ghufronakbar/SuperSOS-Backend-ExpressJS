@@ -1,7 +1,6 @@
 "use strict";
 
-const verifikasi = require("./middleware/verifikasi");
-const express = require("express");
+// const verifikasi = require("./middleware/verifikasi");
 
 module.exports = function (app) {
   var api_admin = require("./controllers/admin");
@@ -98,5 +97,14 @@ module.exports = function (app) {
     app.route('/api/user/call/cancel/:id')
     .put(api_user.call_controller.cancelcall); 
 
-    
+
+    //HISTORY
+    //HISTORY USER
+    app.route('/api/user/call/history/:id')
+    .get(api_user.history_controller.historyuser); 
+
+     //HISTORY USER
+     app.route('/api/user/call/history/detail/:id')
+     .get(api_user.history_controller.historyuserid); 
 };
+

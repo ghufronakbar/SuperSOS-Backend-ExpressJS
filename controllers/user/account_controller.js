@@ -9,112 +9,74 @@ exports.index = function (req, res) {
   response.ok("REST API Worked!", res);
 };
 
-//GET EDITABLE ANIMALS
-exports.mobaccount = function (req, res) {
-  let token = req.params.token;
-  verifikasi(token)(req, res, function () {
-    var id_user = req.decoded.id_user;
-    var data = ["id_user", "email", "name", "phone", "picture"];
-    connection.query(
-      `SELECT ?? FROM users 
-                        WHERE id_user=?`,
-      [data, id_user],
-      function (error, rows, fields) {
-        if (error) {
-          console.log(error);
-          res.status(500).send("Internal Server Error");
-        } else {
-          response.ok(rows, res);
-        }
-      }
-    );
-  });
-};
 
-//EDIT ACCOUNT NAME
-exports.mobaccounteditname = function (req, res) {
-  let name = req.body.name;
-  let token = req.params.token;
-  let now = new Date();
-  let date_now =
-    now.getFullYear() +
-    "-" +
-    ("0" + (now.getMonth() + 1)).slice(-2) +
-    "-" +
-    ("0" + now.getDate()).slice(-2) +
-    " " +
-    ("0" + now.getHours()).slice(-2) +
-    ":" +
-    ("0" + now.getMinutes()).slice(-2) +
-    ":" +
-    ("0" + now.getSeconds()).slice(-2);
+//REGISTER USER
+exports.register = function (req, res) {
+  let fullname = req.body.fullname
+  let address = req.body.address
+  let phone = req.body.phone
+  let email = req.body.email
+  let password = md5(req.body.password)
+  let picture = req.body.picture
 
-  connection.query(
-    `UPDATE users SET name=?, updated_at=? WHERE id_user=?`,
-    [name, date_now, token],
+  connection.query(`INSERT INTO user(fullname,address,phone,email,password,picture) VALUES(?,?,?,?,?,?)`,
+    [fullname, address, phone, email, password, picture],
     function (error, rows, fields) {
       if (error) {
-        console.log(error);
+        console.log(error)
       } else {
         response.ok(rows, res);
-      }
+      };
     }
-  );
+  )
 };
 
-//EDIT ACCOUNT PICTURE
-exports.mobaccounteditpicture = function (req, res) {
-  let picture = req.body.picture;
-  let token = req.params.token;
-  let now = new Date();
-  let date_now =
-    now.getFullYear() +
-    "-" +
-    ("0" + (now.getMonth() + 1)).slice(-2) +
-    "-" +
-    ("0" + now.getDate()).slice(-2) +
-    " " +
-    ("0" + now.getHours()).slice(-2) +
-    ":" +
-    ("0" + now.getMinutes()).slice(-2) +
-    ":" +
-    ("0" + now.getSeconds()).slice(-2);
+//EDIT USER
+exports.editaccount = function (req, res) {
+  let fullname = req.body.fullname
+  let address = req.body.address
+  let phone = req.body.phone
+  let email = req.body.email
+  let id = req.params.id
 
-  connection.query(
-    `UPDATE users SET picture=?, updated_at=? WHERE id_user=?`,
-    [picture, date_now, token],
+  connection.query(`UPDATE user SET fullname=?, address=?, phone=?, email=? WHERE id_user=?`,
+    [fullname, address, phone, email, id],
     function (error, rows, fields) {
       if (error) {
-        console.log(error);
+        console.log(error)
       } else {
         response.ok(rows, res);
-      }
+      };
     }
-  );
+  )
 };
 
-//EDIT ACCOUNT PASSWORD
-exports.mobaccounteditpassword = function (req, res) {
+//EDIT USER
+exports.editpicture = function (req, res) {
+  let picture = req.body.picture
+  let id = req.params.id
+
+  connection.query(`UPDATE user SET picture=? WHERE id_user=?`,
+    [picture, id],
+    function (error, rows, fields) {
+      if (error) {
+        console.log(error)
+      } else {
+        response.ok(rows, res);
+      };
+    }
+  )
+};
+
+//EDIT USER
+exports.editpassword = function (req, res) {
   let old_password = md5(req.body.old_password);
   let new_password = md5(req.body.new_password);
-  let token = req.params.token;
-  let now = new Date();
-  let date_now =
-    now.getFullYear() +
-    "-" +
-    ("0" + (now.getMonth() + 1)).slice(-2) +
-    "-" +
-    ("0" + now.getDate()).slice(-2) +
-    " " +
-    ("0" + now.getHours()).slice(-2) +
-    ":" +
-    ("0" + now.getMinutes()).slice(-2) +
-    ":" +
-    ("0" + now.getSeconds()).slice(-2);
+  let id = req.params.id
 
   connection.query(
-    `SELECT password FROM users WHERE id_user=?`,
-    [token],
+    `SELECT password FROM user WHERE id_user=?`,
+    [id],
     function (error, rows, fields) {
       if (error) {
         console.log(error);
@@ -123,8 +85,8 @@ exports.mobaccounteditpassword = function (req, res) {
           let verification_password = rows[0].password;
           if (old_password == verification_password) {
             connection.query(
-              `UPDATE users SET password=?, updated_at=? WHERE id_user=?`,
-              [new_password, date_now, token],
+              `UPDATE user SET password=?  WHERE id_user=?`,
+              [new_password, id],
               function (error, rows, fields) {
                 if (error) {
                   console.log(error);
@@ -140,134 +102,6 @@ exports.mobaccounteditpassword = function (req, res) {
       }
     }
   );
-};
 
-//GET ID EDITABLE ANIMAL
-exports.mobeditableanimalid = function (req, res) {
-  let today = new Date();
-  let sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-  let formattedDate = sevenDaysAgo.toISOString().slice(0, 10);
-  let token = req.params.token;
-  let id_animal = req.params.id_animal;
 
-  connection.query(
-    `SELECT * FROM animals 
-                        WHERE date >= ? AND id_user=? AND id_animal=?`,
-    [formattedDate, token, id_animal],
-    function (error, rows, fields) {
-      if (error) {
-        console.log(error);
-      } else {
-        response.ok(rows, res);
-      }
-    }
-  );
-};
-
-//POST ANIMAL BY USER
-exports.mobanimalpost = function (req, res) {
-  let local_name = req.body.local_name;
-  let latin_name = req.body.latin_name;
-  let habitat = req.body.habitat;
-  let description = req.body.description;
-  let city = req.body.city;
-  let longitude = req.body.longitude;
-  let latitude = req.body.latitude;
-  let image = req.body.image;
-  let amount = req.body.amount;
-  let token = req.body.token;
-  let now = new Date();
-  let date_now =
-    now.getFullYear() +
-    "-" +
-    ("0" + (now.getMonth() + 1)).slice(-2) +
-    "-" +
-    ("0" + now.getDate()).slice(-2) +
-    " " +
-    ("0" + now.getHours()).slice(-2) +
-    ":" +
-    ("0" + now.getMinutes()).slice(-2) +
-    ":" +
-    ("0" + now.getSeconds()).slice(-2);
-
-  connection.query(
-    `INSERT INTO animals 
-                        (local_name, latin_name, habitat, description, city, longitude, latitude, image, amount, id_user, date,updated_at) 
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [
-      local_name,
-      latin_name,
-      habitat,
-      description,
-      city,
-      longitude,
-      latitude,
-      image,
-      amount,
-      token,
-      date_now,
-      date_now,
-    ],
-    function (error, rows, fields) {
-      if (error) {
-        console.log(error);
-      } else {
-        response.ok(rows, res);
-      }
-    }
-  );
-};
-
-//EDIT ANIMAL BY USER
-exports.mobediteditableanimal = function (req, res) {
-  let local_name = req.body.local_name;
-  let latin_name = req.body.latin_name;
-  let habitat = req.body.habitat;
-  let description = req.body.description;
-  let city = req.body.city;
-  let longitude = req.body.longitude;
-  let latitude = req.body.latitude;
-  let amount = req.body.amount;
-  let token = req.params.token;
-  let now = new Date();
-  let date_now =
-    now.getFullYear() +
-    "-" +
-    ("0" + (now.getMonth() + 1)).slice(-2) +
-    "-" +
-    ("0" + now.getDate()).slice(-2) +
-    " " +
-    ("0" + now.getHours()).slice(-2) +
-    ":" +
-    ("0" + now.getMinutes()).slice(-2) +
-    ":" +
-    ("0" + now.getSeconds()).slice(-2);
-  let id_animal = req.params.id_animal;
-
-  connection.query(
-    `UPDATE animals SET local_name=?,latin_name=?, habitat=?, description=?,
-                        city=?, longitude=?, latitude=?,
-                        amount=?, 
-                        updated_at=? WHERE id_animal=? AND id_user=?`,
-    [
-      local_name,
-      latin_name,
-      habitat,
-      description,
-      city,
-      longitude,
-      latitude,
-      amount,
-      date_now,
-      id_animal,
-      token,
-    ],
-    function (error, rows, fields) {
-      if (error) {
-        console.log(error);
-      } else {
-        response.ok(rows, res);
-      }
-    }
-  );
 };

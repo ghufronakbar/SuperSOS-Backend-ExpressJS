@@ -62,4 +62,28 @@ module.exports = function (app) {
     //MENGEDIT DATA INSTANCES BERDASAR ID (INSTANCES_NAME, ADDRESS)
     app.route('/api/admin/instances/edit/:id')
     .put(apiAdmin.instances_controller.instancesedit); 
+
+
+
+    //USER
+
+    //ACCOUNT
+    //REGISTRASI ACCOUNT
+    app.route('/api/user/account/register')
+    .post(apiUser.account_controller.register); 
+
+    //EDIT ACCOUNT
+    app.route('/api/user/account/edit/data/:id')
+    .put(apiUser.account_controller.editaccount); 
+
+    //EDIT PICTURE
+    app.route('/api/user/account/edit/picture/:id')
+    .put(apiUser.account_controller.editpicture); 
+
+    //EDIT PASSWORD
+    app.route('/api/user/account/edit/password/:id')
+    .put(apiUser.account_controller.editpassword); 
+
+    
+
 };

@@ -49,4 +49,17 @@ module.exports = function (app) {
     app.route('/api/admin/user/:id')
     .get(apiAdmin.user_controller.userid); 
 
+
+    //INSTANCES
+    //MELIHAT DATA INSTANCES
+    app.route('/api/admin/instances')
+    .get(apiAdmin.instances_controller.instances); 
+
+    //MELIHAT DATA INSTANCES BERDASAR ID
+    app.route('/api/admin/instances/:id')
+    .get(apiAdmin.instances_controller.instancesid); 
+
+    //MENGEDIT DATA INSTANCES BERDASAR ID (INSTANCES_NAME, ADDRESS)
+    app.route('/api/admin/instances/edit/:id')
+    .put(apiAdmin.instances_controller.instancesedit); 
 };

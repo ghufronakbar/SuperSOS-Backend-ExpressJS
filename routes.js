@@ -4,8 +4,8 @@ const verifikasi = require("./middleware/verifikasi");
 const express = require("express");
 
 module.exports = function (app) {
-  var apiAdmin = require("./controllers/admin");
-  var apiUser = require("./controllers/user");
+  var api_admin = require("./controllers/admin");
+  var api_user = require("./controllers/user");
 
 
     //API ADMIN
@@ -13,55 +13,59 @@ module.exports = function (app) {
     //CALL
     //MELIHAT DATA CALL SESUAI INSTANCES
     app.route('/api/admin/calls/:id') //ID INSTANCES
-    .get(apiAdmin.call_controller.call); 
+    .get(api_admin.call_controller.call); 
 
     //MELIHAT DATA CALL SESUAI ID
     app.route('/api/admin/call/:id')
-    .get(apiAdmin.call_controller.callid); 
+    .get(api_admin.call_controller.callid); 
 
     //MELIHAT DATA CALL PENDING (STATUS=0) SESUAI INSTANCES
     app.route('/api/admin/calls/pending/:id') //ID INSTANCES
-    .get(apiAdmin.call_controller.callpending); 
+    .get(api_admin.call_controller.callpending); 
 
     //MELIHAT DATA CALL REJECTED (STATUS=1) SESUAI INSTANCES
+    app.route('/api/admin/calls/canceled/:id') //ID INSTANCES
+    .get(api_admin.call_controller.callrejected); 
+
+    //MELIHAT DATA CALL REJECTED (STATUS=2) SESUAI INSTANCES
     app.route('/api/admin/calls/rejected/:id') //ID INSTANCES
-    .get(apiAdmin.call_controller.callrejected); 
+    .get(api_admin.call_controller.callrejected); 
 
-    //MELIHAT DATA CALL APPROVED (STATUS=2) SESUAI INSTANCES
+    //MELIHAT DATA CALL APPROVED (STATUS=3) SESUAI INSTANCES
     app.route('/api/admin/calls/approved/:id') //ID INSTANCES
-    .get(apiAdmin.call_controller.callapproved); 
+    .get(api_admin.call_controller.callapproved); 
 
-    //MENGUBAH CALL STATUS 1/2 SESUAI ID
+    //MENGUBAH CALL STATUS 2/3 SESUAI ID
     app.route('/api/admin/call/approve/:id')
-    .put(apiAdmin.call_controller.callapprove); 
+    .put(api_admin.call_controller.callapprove); 
 
     //MENGHAPUS CALL SESUAI ID
     app.route('/api/admin/call/delete/:id')
-    .delete(apiAdmin.call_controller.calldelete); 
+    .delete(api_admin.call_controller.calldelete); 
 
 
     //USER
     //MELIHAT DATA USER BESERTA HISTORY CALL
     app.route('/api/admin/user')
-    .get(apiAdmin.user_controller.user); 
+    .get(api_admin.user_controller.user); 
 
     //MELIHAT DATA USER BESERTA HISTORY CALL SESUAI ID
     app.route('/api/admin/user/:id')
-    .get(apiAdmin.user_controller.userid); 
+    .get(api_admin.user_controller.userid); 
 
 
     //INSTANCES
     //MELIHAT DATA INSTANCES
     app.route('/api/admin/instances')
-    .get(apiAdmin.instances_controller.instances); 
+    .get(api_admin.instances_controller.instances); 
 
     //MELIHAT DATA INSTANCES BERDASAR ID
     app.route('/api/admin/instances/:id')
-    .get(apiAdmin.instances_controller.instancesid); 
+    .get(api_admin.instances_controller.instancesid); 
 
     //MENGEDIT DATA INSTANCES BERDASAR ID (INSTANCES_NAME, ADDRESS)
     app.route('/api/admin/instances/edit/:id')
-    .put(apiAdmin.instances_controller.instancesedit); 
+    .put(api_admin.instances_controller.instancesedit); 
 
 
 
@@ -70,20 +74,29 @@ module.exports = function (app) {
     //ACCOUNT
     //REGISTRASI ACCOUNT
     app.route('/api/user/account/register')
-    .post(apiUser.account_controller.register); 
+    .post(api_user.account_controller.register); 
 
     //EDIT ACCOUNT
     app.route('/api/user/account/edit/data/:id')
-    .put(apiUser.account_controller.editaccount); 
+    .put(api_user.account_controller.editaccount); 
 
     //EDIT PICTURE
     app.route('/api/user/account/edit/picture/:id')
-    .put(apiUser.account_controller.editpicture); 
+    .put(api_user.account_controller.editpicture); 
 
     //EDIT PASSWORD
     app.route('/api/user/account/edit/password/:id')
-    .put(apiUser.account_controller.editpassword); 
+    .put(api_user.account_controller.editpassword); 
+
+
+    //CALL
+    //MAKE CALL
+    app.route('/api/user/call/make')
+    .post(api_user.call_controller.makecall); 
+
+    //CANCEL CALL
+    app.route('/api/user/call/cancel/:id')
+    .put(api_user.call_controller.cancelcall); 
 
     
-
 };

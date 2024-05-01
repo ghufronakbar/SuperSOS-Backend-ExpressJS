@@ -81,6 +81,31 @@ exports.callpending = function (req, res) {
     )
 };
 
+
+//GET CALLS CANCELED    
+exports.callcanceled = function (req, res) {
+    let id = req.params.id
+    connection.query(`SELECT calls.id_call, calls.message, calls.latitude, calls.longitude,
+                        calls.applied_at, calls.answered_at, calls.status, 
+                        user.fullname AS user_name, user.address AS user_address,
+                        user.phone AS user_phone, user.email AS user_email, user.picture AS user_picture,
+                        admin.fullname AS admin_name,
+                        admin.phone AS admin_phone, admin.email AS admin_email, 
+                        instances.id_instances, instances.instances_name, instances.address
+                        FROM user JOIN admin JOIN calls JOIN instances
+                        WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
+                        AND instances.id_instances = admin.id_instances AND calls.status=1 AND instances.id_instances = ? `,
+        [id],
+        function (error, rows, fields) {
+            if (error) {
+                console.log(error)
+            } else {
+                response.ok(rows, res)
+            };
+        }
+    )
+};
+
 //GET CALLS NOT APPROVED
 exports.callrejected = function (req, res) {
     let id = req.params.id
@@ -93,7 +118,7 @@ exports.callrejected = function (req, res) {
                         instances.id_instances, instances.instances_name, instances.address
                         FROM user JOIN admin JOIN calls JOIN instances
                         WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND calls.status=1 AND instances.id_instances = ? `,
+                        AND instances.id_instances = admin.id_instances AND calls.status=2 AND instances.id_instances = ? `,
         [id],
         function (error, rows, fields) {
             if (error) {
@@ -117,7 +142,7 @@ exports.callapproved = function (req, res) {
                         instances.id_instances, instances.instances_name, instances.address
                         FROM user JOIN admin JOIN calls JOIN instances
                         WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND calls.status=2 AND instances.id_instances = ? `,
+                        AND instances.id_instances = admin.id_instances AND calls.status=3 AND instances.id_instances = ? `,
         [id],
         function (error, rows, fields) {
             if (error) {
@@ -138,8 +163,8 @@ exports.callapprove = function (req, res) {
         ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2);
 
 
-    if (status == 1) {
-        connection.query(`UPDATE calls SET status=1, answered_at=?  WHERE id_call=? `,
+    if (status == 2) {
+        connection.query(`UPDATE calls SET status=2, answered_at=?  WHERE id_call=? `,
             [datetimenow, id],
             function (error, rows, fields) {
                 if (error) {
@@ -149,8 +174,8 @@ exports.callapprove = function (req, res) {
                 };
             }
         )
-    }else if(status==2){
-        connection.query(`UPDATE calls SET status=2, answered_at=?  WHERE id_call=? `,
+    }else if(status==3){
+        connection.query(`UPDATE calls SET status=3, answered_at=?  WHERE id_call=? `,
             [datetimenow, id],
             function (error, rows, fields) {
                 if (error) {

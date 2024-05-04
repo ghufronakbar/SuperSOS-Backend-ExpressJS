@@ -211,7 +211,7 @@ exports.callapprove = function (req, res) {
     let datetimenow = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + ' ' +
         ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2);
 
-    connection.query(`UPDATE calls SET status=1, id_instances=?, answered_at=? WHERE id_call=?`,[id_instances, datetimenow,id_call],
+    connection.query(`UPDATE calls SET status=2, id_instances=?, answered_at=? WHERE id_call=?`,[id_instances, datetimenow,id_call],
         function (error, rows, fields) {
             if (error) {
                 console.log(error)

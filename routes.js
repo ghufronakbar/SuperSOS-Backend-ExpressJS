@@ -86,5 +86,43 @@ module.exports = function (app) {
     .put(api_instance.account_controller.profilepass);
 
 
+
+  // API USER
+
+  //REGISTER
+  app.route(`/api/user/register`)
+    .post(api_user.account_controller.register);
+
+
+  //CALL
+
+  app.route(`/api/user/call/make/:id_user`)
+    .post(api_user.call_controller.makecall);
+
+  app.route(`/api/user/call/cancel/:id_call`)
+    .put(api_user.call_controller.cancelcall);
+
+    //HISTORY
+
+  app.route(`/api/user/call/history/:id_user`)
+    .get(api_user.history_controller.callhistory);
+
+    app.route(`/api/user/call/history/detail/:id_call`)
+    .get(api_user.history_controller.callhistorydetail);
+
+
+    //ACCOUNT
+    app.route(`/api/user/profile/:id_user`)
+    .get(api_user.account_controller.profile);
+
+    app.route(`/api/user/profile/edit/:id_user`)
+    .put(api_user.account_controller.editaccount);
+
+    app.route(`/api/user/profile/edit/picture/:id_user`)
+    .put(api_user.account_controller.editpicture);
+
+    app.route(`/api/user/profile/edit/password/:id_user`)
+    .put(api_user.account_controller.editpassword);
+
 };
 

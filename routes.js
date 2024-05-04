@@ -4,6 +4,7 @@
 
 module.exports = function (app) {
   var api_admin = require("./controllers/admin");
+  var api_instance = require("./controllers/intances");
   var api_user = require("./controllers/user");
 
 
@@ -49,5 +50,22 @@ module.exports = function (app) {
 
     app.route(`/api/admin/instance/reject/:id_instances`)
     .delete(api_admin.instances_controller.instancedelete); 
+
+
+
+    // API INSTANCES
+
+    // CALL
+    app.route(`/api/instance/calls/:type`)
+    .get(api_instance.call_controller.calls); 
+
+    app.route(`/api/instance/call/:id_call`)
+    .get(api_instance.call_controller.callid); 
+
+    app.route(`/api/instance/calls/pending/:type`)
+    .get(api_instance.call_controller.callpending); 
+
+    app.route(`/api/instance/call/approve/:id_call`)
+    .put(api_instance.call_controller.callapprove); 
 };
 

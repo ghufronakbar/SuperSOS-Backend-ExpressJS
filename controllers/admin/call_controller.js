@@ -4,202 +4,254 @@ var response = require('../../res');
 var connection = require('../../connection');
 var md5 = require('md5');
 
-exports.index = function (req, res) {
-    response.ok("REST API Worked!", res)
-}
 
-//GET CALLS 
-exports.call = function (req, res) {
-    let id = req.params.id
-    connection.query(`SELECT calls.id_call, calls.message, calls.latitude, calls.longitude,
-                        calls.applied_at, calls.answered_at, calls.status, 
-                        user.fullname AS user_name, user.address AS user_address,
-                        user.phone AS user_phone, user.email AS user_email, user.picture AS user_picture,
-                        admin.fullname AS admin_name,
-                        admin.phone AS admin_phone, admin.email AS admin_email, 
-                        instances.id_instances, instances.instances_name, instances.address
-                        FROM user JOIN admin JOIN calls JOIN instances
-                        WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND instances.id_instances = ? `,
-        [id],
+// GET ALL CALLS
+exports.calls = function (req, res) {
+    connection.query(`SELECT c.id_call, c.message, c.latitude, c.longitude, c.applied_at,
+                        c.answered_at, c.status, c.type , c.id_user, u.fullname, u.address, u.phone,
+                        u.email, u.picture, c.id_instances, i.instances_name, 
+                        i.address AS instances_address, i.email AS instances_email, i.phone AS instances_phone
+                        FROM calls AS c 
+                        JOIN user AS u ON c.id_user = u.id_user 
+                        LEFT JOIN instances AS i ON c.id_instances = i.id_instances`,
         function (error, rows, fields) {
             if (error) {
                 console.log(error)
             } else {
-                response.ok(rows, res)
+                // Group rows by id_call
+                let groupedData = {};
+                rows.forEach(row => {
+                    if (!groupedData[row.id_call]) {
+                        groupedData[row.id_call] = {
+                            id_call: row.id_call,
+                            message: row.message,
+                            latitude: row.latitude,
+                            longitude: row.longitude,
+                            applied_at: row.applied_at,
+                            answered_at: row.answered_at,
+                            status: row.status,
+                            type: row.type,
+                            user: [],
+                            instances: []
+                        };
+                    }
+                    groupedData[row.id_call].user.push({
+                        id_user: row.id_user,
+                        fullname: row.fullname,
+                        address: row.address,
+                        phone: row.phone,
+                        email: row.email,
+                        picture: row.picture
+                    });
+                    if (row.id_instances) {
+                        groupedData[row.id_call].instances.push({
+                            id_instances: row.id_instances,
+                            instances_name: row.instances_name,
+                            address: row.instances_address,
+                            phone: row.instances_phone,
+                            email: row.instances_email
+                        });
+                    }
+                });
+
+                // Convert grouped data object to array
+                let result = [];
+                for (let key in groupedData) {
+                    result.push(groupedData[key]);
+                }
+
+                response.ok(result, res);
             };
         }
     )
 };
 
-//GET CALLS ID 
+
+
+// GET ID CALL
 exports.callid = function (req, res) {
-    let id = req.params.id
-    
-    connection.query(`SELECT calls.id_call, calls.message, calls.latitude, calls.longitude,
-                        calls.applied_at, calls.answered_at, calls.status, 
-                        user.fullname AS user_name, user.address AS user_address,
-                        user.phone AS user_phone, user.email AS user_email, user.picture AS user_picture,
-                        admin.fullname AS admin_name,
-                        admin.phone AS admin_phone, admin.email AS admin_email, 
-                        instances.id_instances, instances.instances_name, instances.address
-                        FROM user JOIN admin JOIN calls JOIN instances
-                        WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND calls.id_call=? `,
-        [id],
+    let id_call = req.params.id_call
+    connection.query(`SELECT c.id_call, c.message, c.latitude, c.longitude, c.applied_at,
+                        c.answered_at, c.status, c.type, c.id_user, u.fullname, u.address, u.phone,
+                        u.email, u.picture, c.id_instances, i.instances_name, 
+                        i.address AS instances_address, i.email AS instances_email, i.phone AS instances_phone
+                        FROM calls AS c 
+                        JOIN user AS u ON c.id_user = u.id_user 
+                        LEFT JOIN instances AS i ON c.id_instances = i.id_instances WHERE c.id_call=?`, [id_call],
         function (error, rows, fields) {
             if (error) {
                 console.log(error)
             } else {
-                response.ok(rows, res)
+                // Group rows by id_call
+                let groupedData = {};
+                rows.forEach(row => {
+                    if (!groupedData[row.id_call]) {
+                        groupedData[row.id_call] = {
+                            id_call: row.id_call,
+                            message: row.message,
+                            latitude: row.latitude,
+                            longitude: row.longitude,
+                            applied_at: row.applied_at,
+                            answered_at: row.answered_at,
+                            status: row.status,
+                            type: row.type,
+                            user: [],
+                            instances: []
+                        };
+                    }
+                    groupedData[row.id_call].user.push({
+                        id_user: row.id_user,
+                        fullname: row.fullname,
+                        address: row.address,
+                        phone: row.phone,
+                        email: row.email,
+                        picture: row.picture
+                    });
+                    if (row.id_instances) {
+                        groupedData[row.id_call].instances.push({
+                            id_instances: row.id_instances,
+                            instances_name: row.instances_name,
+                            address: row.instances_address,
+                            phone: row.instances_phone,
+                            email: row.instances_email
+                        });
+                    }
+                });
+
+                // Convert grouped data object to array
+                let result = [];
+                for (let key in groupedData) {
+                    result.push(groupedData[key]);
+                }
+
+                response.ok(result, res);
             };
         }
     )
 };
 
-//GET CALLS PENDING
-exports.callpending = function (req, res) {
-    let id = req.params.id
-    connection.query(`SELECT calls.id_call, calls.message, calls.latitude, calls.longitude,
-                        calls.applied_at, calls.answered_at, calls.status, 
-                        user.fullname AS user_name, user.address AS user_address,
-                        user.phone AS user_phone, user.email AS user_email, user.picture AS user_picture,
-                        admin.fullname AS admin_name,
-                        admin.phone AS admin_phone, admin.email AS admin_email, 
-                        instances.id_instances, instances.instances_name, instances.address
-                        FROM user JOIN admin JOIN calls JOIN instances
-                        WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND calls.status=0 AND instances.id_instances = ? `,
-        [id],
+
+// GET ID CALL INSTANCES
+exports.callinstances = function (req, res) {
+    let id_instances = req.params.id_instances
+    connection.query(`SELECT c.id_call, c.message, c.latitude, c.longitude, c.applied_at,
+                        c.answered_at, c.status, c.type, c.id_user, u.fullname, u.address, u.phone,
+                        u.email, u.picture, c.id_instances, i.instances_name, 
+                        i.address AS instances_address, i.email AS instances_email, i.phone AS instances_phone
+                        FROM calls AS c 
+                        JOIN user AS u ON c.id_user = u.id_user 
+                        LEFT JOIN instances AS i ON c.id_instances = i.id_instances WHERE c.id_instances=?`, [id_instances],
         function (error, rows, fields) {
             if (error) {
                 console.log(error)
             } else {
-                response.ok(rows, res)
+                // Group rows by id_call
+                let groupedData = {};
+                rows.forEach(row => {
+                    if (!groupedData[row.id_call]) {
+                        groupedData[row.id_call] = {
+                            id_call: row.id_call,
+                            message: row.message,
+                            latitude: row.latitude,
+                            longitude: row.longitude,
+                            applied_at: row.applied_at,
+                            answered_at: row.answered_at,
+                            status: row.status,
+                            type: row.type,
+                            user: [],
+                            instances: []
+                        };
+                    }
+                    groupedData[row.id_call].user.push({
+                        id_user: row.id_user,
+                        fullname: row.fullname,
+                        address: row.address,
+                        phone: row.phone,
+                        email: row.email,
+                        picture: row.picture
+                    });
+                    if (row.id_instances) {
+                        groupedData[row.id_call].instances.push({
+                            id_instances: row.id_instances,
+                            instances_name: row.instances_name,
+                            address: row.instances_address,
+                            phone: row.instances_phone,
+                            email: row.instances_email
+                        });
+                    }
+                });
+
+                // Convert grouped data object to array
+                let result = [];
+                for (let key in groupedData) {
+                    result.push(groupedData[key]);
+                }
+
+                response.ok(result, res);
             };
         }
     )
 };
 
 
-//GET CALLS CANCELED    
-exports.callcanceled = function (req, res) {
-    let id = req.params.id
-    connection.query(`SELECT calls.id_call, calls.message, calls.latitude, calls.longitude,
-                        calls.applied_at, calls.answered_at, calls.status, 
-                        user.fullname AS user_name, user.address AS user_address,
-                        user.phone AS user_phone, user.email AS user_email, user.picture AS user_picture,
-                        admin.fullname AS admin_name,
-                        admin.phone AS admin_phone, admin.email AS admin_email, 
-                        instances.id_instances, instances.instances_name, instances.address
-                        FROM user JOIN admin JOIN calls JOIN instances
-                        WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND calls.status=1 AND instances.id_instances = ? `,
-        [id],
+
+// GET ID CALL TYPE
+exports.calltype = function (req, res) {
+    let type = req.params.type;
+    connection.query(`SELECT c.id_call, c.message, c.latitude, c.longitude, c.applied_at,
+                        c.answered_at, c.status, c.type, c.id_user, u.fullname, u.address, u.phone,
+                        u.email, u.picture, c.id_instances, i.instances_name, 
+                        i.address AS instances_address, i.email AS instances_email, i.phone AS instances_phone
+                        FROM calls AS c 
+                        JOIN user AS u ON c.id_user = u.id_user 
+                        LEFT JOIN instances AS i ON c.id_instances = i.id_instances WHERE c.type=?`, [type],
         function (error, rows, fields) {
             if (error) {
                 console.log(error)
             } else {
-                response.ok(rows, res)
-            };
-        }
-    )
-};
+                // Group rows by id_call
+                let groupedData = {};
+                rows.forEach(row => {
+                    if (!groupedData[row.id_call]) {
+                        groupedData[row.id_call] = {
+                            id_call: row.id_call,
+                            message: row.message,
+                            latitude: row.latitude,
+                            longitude: row.longitude,
+                            applied_at: row.applied_at,
+                            answered_at: row.answered_at,
+                            status: row.status,
+                            type: row.type,
+                            user: [],
+                            instances: []
+                        };
+                    }
+                    groupedData[row.id_call].user.push({
+                        id_user: row.id_user,
+                        fullname: row.fullname,
+                        address: row.address,
+                        phone: row.phone,
+                        email: row.email,
+                        picture: row.picture
+                    });
+                    if (row.id_instances) {
+                        groupedData[row.id_call].instances.push({
+                            id_instances: row.id_instances,
+                            instances_name: row.instances_name,
+                            address: row.instances_address,
+                            phone: row.instances_phone,
+                            email: row.instances_email
+                        });
+                    }
+                });
 
-//GET CALLS NOT APPROVED
-exports.callrejected = function (req, res) {
-    let id = req.params.id
-    connection.query(`SELECT calls.id_call, calls.message, calls.latitude, calls.longitude,
-                        calls.applied_at, calls.answered_at, calls.status, 
-                        user.fullname AS user_name, user.address AS user_address,
-                        user.phone AS user_phone, user.email AS user_email, user.picture AS user_picture,
-                        admin.fullname AS admin_name,
-                        admin.phone AS admin_phone, admin.email AS admin_email, 
-                        instances.id_instances, instances.instances_name, instances.address
-                        FROM user JOIN admin JOIN calls JOIN instances
-                        WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND calls.status=2 AND instances.id_instances = ? `,
-        [id],
-        function (error, rows, fields) {
-            if (error) {
-                console.log(error)
-            } else {
-                response.ok(rows, res)
-            };
-        }
-    )
-};
+                // Convert grouped data object to array
+                let result = [];
+                for (let key in groupedData) {
+                    result.push(groupedData[key]);
+                }
 
-//GET CALLS APPROVED
-exports.callapproved = function (req, res) {
-    let id = req.params.id
-    connection.query(`SELECT calls.id_call, calls.message, calls.latitude, calls.longitude,
-                        calls.applied_at, calls.answered_at, calls.status, 
-                        user.fullname AS user_name, user.address AS user_address,
-                        user.phone AS user_phone, user.email AS user_email, user.picture AS user_picture,
-                        admin.fullname AS admin_name,
-                        admin.phone AS admin_phone, admin.email AS admin_email, 
-                        instances.id_instances, instances.instances_name, instances.address
-                        FROM user JOIN admin JOIN calls JOIN instances
-                        WHERE user.id_user = calls.id_user AND admin.id_admin = calls.id_admin 
-                        AND instances.id_instances = admin.id_instances AND calls.status=3 AND instances.id_instances = ? `,
-        [id],
-        function (error, rows, fields) {
-            if (error) {
-                console.log(error)
-            } else {
-                response.ok(rows, res)
-            };
-        }
-    )
-};
-
-//PUT CALL APPROVE 
-exports.callapprove = function (req, res) {
-    let id = req.params.id
-    let now = new Date();
-    let status = req.body.status
-    let datetimenow = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + ' ' +
-        ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2);
-
-
-    if (status == 2) {
-        connection.query(`UPDATE calls SET status=2, answered_at=?  WHERE id_call=? `,
-            [datetimenow, id],
-            function (error, rows, fields) {
-                if (error) {
-                    console.log(error)
-                } else {
-                    response.ok(rows, res)
-                };
-            }
-        )
-    }else if(status==3){
-        connection.query(`UPDATE calls SET status=3, answered_at=?  WHERE id_call=? `,
-            [datetimenow, id],
-            function (error, rows, fields) {
-                if (error) {
-                    console.log(error)
-                } else {
-                    response.ok(rows, res)
-                };
-            }
-        )
-    }
-
-};
-
-//DELETE CALLS
-exports.calldelete = function (req, res) {
-
-    let id = req.params.id
-    connection.query(`DELETE FROM calls WHERE id_call=?`,
-        [id],
-        function (error, rows, fields) {
-            if (error) {
-                console.log(error)
-            } else {
-                response.ok(rows, res)
+                response.ok(result, res);
             };
         }
     )

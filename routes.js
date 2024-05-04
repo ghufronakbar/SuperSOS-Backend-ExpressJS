@@ -10,101 +10,44 @@ module.exports = function (app) {
     //API ADMIN
 
     //CALL
-    //MELIHAT DATA CALL SESUAI INSTANCES
-    app.route('/api/admin/calls/:id') //ID INSTANCES
-    .get(api_admin.call_controller.call); 
-
-    //MELIHAT DATA CALL SESUAI ID
-    app.route('/api/admin/call/:id')
+    app.route(`/api/admin/calls/`)
+    .get(api_admin.call_controller.calls); 
+ 
+    app.route(`/api/admin/call/:id_call`)
     .get(api_admin.call_controller.callid); 
 
-    //MELIHAT DATA CALL PENDING (STATUS=0) SESUAI INSTANCES
-    app.route('/api/admin/calls/pending/:id') //ID INSTANCES
-    .get(api_admin.call_controller.callpending); 
+    app.route(`/api/admin/call/instances/:id_instances`)
+    .get(api_admin.call_controller.callinstances); 
 
-    //MELIHAT DATA CALL REJECTED (STATUS=1) SESUAI INSTANCES
-    app.route('/api/admin/calls/canceled/:id') //ID INSTANCES
-    .get(api_admin.call_controller.callrejected); 
-
-    //MELIHAT DATA CALL REJECTED (STATUS=2) SESUAI INSTANCES
-    app.route('/api/admin/calls/rejected/:id') //ID INSTANCES
-    .get(api_admin.call_controller.callrejected); 
-
-    //MELIHAT DATA CALL APPROVED (STATUS=3) SESUAI INSTANCES
-    app.route('/api/admin/calls/approved/:id') //ID INSTANCES
-    .get(api_admin.call_controller.callapproved); 
-
-    //MENGUBAH CALL STATUS 2/3 SESUAI ID
-    app.route('/api/admin/call/approve/:id')
-    .put(api_admin.call_controller.callapprove); 
-
-    //MENGHAPUS CALL SESUAI ID
-    app.route('/api/admin/call/delete/:id')
-    .delete(api_admin.call_controller.calldelete); 
+    app.route(`/api/admin/call/type/:type`)
+    .get(api_admin.call_controller.calltype); 
 
 
     //USER
-    //MELIHAT DATA USER BESERTA HISTORY CALL
-    app.route('/api/admin/user')
+    app.route(`/api/admin/users/`)
     .get(api_admin.user_controller.user); 
 
-    //MELIHAT DATA USER BESERTA HISTORY CALL SESUAI ID
-    app.route('/api/admin/user/:id')
+    app.route(`/api/admin/user/:id_user`)
     .get(api_admin.user_controller.userid); 
+
+    app.route(`/api/admin/user/suspend/:id_user`)
+    .put(api_admin.user_controller.usersuspend); 
 
 
     //INSTANCES
-    //MELIHAT DATA INSTANCES
-    app.route('/api/admin/instances')
+    app.route(`/api/admin/instances/`)
     .get(api_admin.instances_controller.instances); 
 
-    //MELIHAT DATA INSTANCES BERDASAR ID
-    app.route('/api/admin/instances/:id')
-    .get(api_admin.instances_controller.instancesid); 
+    app.route(`/api/admin/instance/:id_instances`)
+    .get(api_admin.instances_controller.instanceid); 
 
-    //MENGEDIT DATA INSTANCES BERDASAR ID (INSTANCES_NAME, ADDRESS)
-    app.route('/api/admin/instances/edit/:id')
-    .put(api_admin.instances_controller.instancesedit); 
+    app.route(`/api/admin/instances/pending`)
+    .get(api_admin.instances_controller.instancepending); 
 
+    app.route(`/api/admin/instance/approve/:id_instances`)
+    .put(api_admin.instances_controller.instanceapprove); 
 
-
-    //USER
-
-    //ACCOUNT
-    //REGISTRASI ACCOUNT
-    app.route('/api/user/account/register')
-    .post(api_user.account_controller.register); 
-
-    //EDIT ACCOUNT
-    app.route('/api/user/account/edit/data/:id')
-    .put(api_user.account_controller.editaccount); 
-
-    //EDIT PICTURE
-    app.route('/api/user/account/edit/picture/:id')
-    .put(api_user.account_controller.editpicture); 
-
-    //EDIT PASSWORD
-    app.route('/api/user/account/edit/password/:id')
-    .put(api_user.account_controller.editpassword); 
-
-
-    //CALL
-    //MAKE CALL
-    app.route('/api/user/call/make')
-    .post(api_user.call_controller.makecall); 
-
-    //CANCEL CALL
-    app.route('/api/user/call/cancel/:id')
-    .put(api_user.call_controller.cancelcall); 
-
-
-    //HISTORY
-    //HISTORY USER
-    app.route('/api/user/call/history/:id')
-    .get(api_user.history_controller.historyuser); 
-
-     //HISTORY USER
-     app.route('/api/user/call/history/detail/:id')
-     .get(api_user.history_controller.historyuserid); 
+    app.route(`/api/admin/instance/reject/:id_instances`)
+    .delete(api_admin.instances_controller.instancedelete); 
 };
 

@@ -10,6 +10,10 @@ module.exports = function (app) {
 
   //API ADMIN
 
+  //ACCOUNT
+  app.route(`/api/admin/login/`)
+  .post(api_admin.account_controller.login);
+
   //CALL
   app.route(`/api/admin/calls/`)
     .get(api_admin.call_controller.calls);
@@ -59,6 +63,9 @@ module.exports = function (app) {
   app.route(`/api/instance/register/`)
     .post(api_instance.account_controller.register);
 
+    app.route(`/api/instance/login/`)
+    .post(api_instance.account_controller.login);
+
 
   // CALL
   app.route(`/api/instance/calls/:type`)
@@ -72,6 +79,9 @@ module.exports = function (app) {
 
   app.route(`/api/instance/call/approve/:id_call`)
     .put(api_instance.call_controller.callapprove);
+
+    app.route(`/api/instance/calls/history/:id_instances`)
+    .get(api_instance.call_controller.callhistory);
 
 
 

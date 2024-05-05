@@ -3,6 +3,10 @@
 var response = require('../../res');
 var connection = require('../../connection');
 var md5 = require('md5');
+var ip = require('ip');
+var config = require('../../config/secret')
+var jwt = require('jsonwebtoken');
+var mysql = require('mysql');
 
 //PROFILE
 exports.profile = function (req, res) {
@@ -38,6 +42,11 @@ exports.profileedit = function (req, res) {
     let email = req.body.email
     let phone = req.body.phone
     let id_instances = req.params.id_instances
+    console.log(instances_name)
+    console.log(address)
+    console.log(email)
+    console.log(phone)
+    console.log(id_instances)
     connection.query(`UPDATE instances SET instances_name=?, address=?, email=?, phone=? WHERE id_instances=?`,
         [instances_name, address, email, phone, id_instances],
         function (error, rows, fields) {
@@ -57,6 +66,9 @@ exports.profilepass = function (req, res) {
     let new_password = md5(req.body.new_password);
     let id_instances = req.params.id_instances;
 
+    console.log(old_password)
+    console.log(new_password)
+    console.log(id_instances)
     // Periksa old_password dengan melakukan SELECT query
     connection.query(`
         SELECT password FROM instances WHERE id_instances = ?`,
@@ -159,5 +171,78 @@ exports.register = function (req, res) {
 };
 
 
+
+
+//LOGIN
+exports.login = function (req, res) {
+    var post = {
+        email: req.body.email,
+        password: req.body.password
+    }
+
+    var query = "SELECT id_instances, instances_name, address, email, phone, status, type FROM ?? WHERE ??=? AND ??=?";
+    var table = ["instances", "password", md5(post.password), "email", post.email];
+
+    console.log(post)
+
+    query = mysql.format(query, table);
+    connection.query(query, function (error, rows) {
+        if (error) {
+            console.log(error)
+        } else {
+          
+            if (rows.length == 0) {
+
+                res.json({
+                    "Error": true,
+                    "Message": "Emaill or Password doesn't match!"
+                })
+
+            } else if (rows.length == 1) {
+
+                let status = rows[0].status
+                if (status == 0) {
+
+                    res.json({
+                        "Error": true,
+                        "Message": "Instances Has Not Approved!"
+                    })
+                } else {
+
+                    var token = jwt.sign({ rows }, config.secret, {
+                        expiresIn: 1440
+                    });
+                    let id_instances = rows[0].id_instances;
+
+                    var data = {
+                        id_instances: id_instances,
+                        token: token,
+                        ip_address: ip.address()
+                    }
+
+                    var query = "INSERT INTO ?? SET ?";
+                    var table = ["akses_token"];
+
+                    query = mysql.format(query, table);
+                    connection.query(query, data, function (error, rows) {
+                        if (error) {
+                            console.log(error)
+                        } else {
+                            res.json({
+                                success: true,
+                                message: "Token JWT Generated!",
+                                token: token,
+                                currUser: data.id_instances
+                            });
+                        }
+                    });
+                }
+
+
+            }
+
+        }
+    })
+}
 
 

@@ -7,15 +7,14 @@ exports.ok = function(values,res){
     };
 
      res.json(data);
-     res.end();
+     
 }
 
-exports.error = function(values,res){
-    var data ={
+exports.error = function( message, res) {
+    var error = {
         'status':400,
-        'values':values
+        message: message
     };
 
-     res.json(data);
-     res.end();
-}
+    res.status(400).json({ error: error });
+};

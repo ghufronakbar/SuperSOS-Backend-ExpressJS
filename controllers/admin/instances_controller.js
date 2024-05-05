@@ -28,7 +28,7 @@ exports.instances = function (req, res) {
         FROM instances AS i
         LEFT JOIN calls AS c ON i.id_instances = c.id_instances 
         LEFT JOIN user AS u ON u.id_user = c.id_user 
-        
+        WHERE i.status=1
         GROUP BY i.id_instances
         ORDER BY i.id_instances DESC
     `, 

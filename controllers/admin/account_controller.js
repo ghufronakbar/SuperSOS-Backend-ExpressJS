@@ -60,7 +60,7 @@ exports.login = function (req, res) {
                             success: true,
                             message: "Token JWT Generated!",
                             token: token,
-                            currUser: data.id_instances
+                            currUser: data.id_admin
                         });
                     }
                 });

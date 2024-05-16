@@ -32,6 +32,9 @@ module.exports = function (app) {
 
 
   //ACCOUNT
+  app.route(`/api/user/name`)
+    .get(verifikasiUser, api_user.account_controller.name);
+
   app.route(`/api/user/profile`)
     .get(verifikasiUser, api_user.account_controller.profile);
 

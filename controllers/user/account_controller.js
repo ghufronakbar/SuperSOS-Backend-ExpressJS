@@ -213,6 +213,26 @@ exports.profile = function (req, res) {
   );
 };
 
+//PROFILE
+exports.name = function (req, res) {
+  const id_user = req.decoded.id_user
+  connection.query(`
+      SELECT 
+          u.id_user,
+          u.fullname,          
+          (SELECT COUNT(*) FROM calls WHERE id_user = u.id_user) AS call_applied
+      FROM user AS u
+      WHERE id_user=?
+  `, [id_user],
+    function (error, rows, fields) {
+      if (error) {
+        console.log(error)
+      } else {
+        response.ok(rows, res);
+      };
+    }
+  );
+};
 
 // EDIT USER
 exports.editaccount = function (req, res) {

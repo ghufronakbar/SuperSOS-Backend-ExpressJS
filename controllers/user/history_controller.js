@@ -13,7 +13,7 @@ exports.index = function (req, res) {
 
 //HISTORY CALL
 exports.callhistory = function (req, res) {
-    let id_user = req.params.id_user
+    let id_user = req.decoded.id_user
     connection.query(`SELECT c.id_call, c.message, c.latitude, c.longitude, c.applied_at, c.answered_at, 
                       c.status,c.type AS call_type, c.id_user, u.fullname, c.id_instances, i.instances_name,
                       i.address AS instances_address, i.email AS instances_email, i.phone AS instances_phone

@@ -21,7 +21,8 @@ exports.makecall = function (req, res) {
   let datetimenow = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + ' ' +
     ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2);
 
-  let id_user = req.params.id_user
+  let id_user = req.decoded.id_user
+  console.log(id_user)
 
   connection.query(`INSERT INTO calls(message,latitude,longitude,applied_at,status,id_user,type) 
                     VALUES(?,?,?,?,?,?,?)`,

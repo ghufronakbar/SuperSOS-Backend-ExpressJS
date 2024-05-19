@@ -20,7 +20,7 @@ exports.callhistory = function (req, res) {
                       FROM calls AS c 
                       JOIN user AS u ON c.id_user = u.id_user 
                       LEFT JOIN instances AS i ON c.id_instances = i.id_instances
-                      WHERE c.id_user=?`,
+                      WHERE c.id_user=? ORDER BY c.applied_at DESC`,
       [id_user],
       function (error, rows, fields) {
         if (error) {

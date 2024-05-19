@@ -16,10 +16,10 @@ module.exports = function (app) {
 
 
   //CALL
-  app.route(`/api/user/call/make/:id_user`)
+  app.route(`/api/user/call/make`)
     .post(verifikasiUser, api_user.call_controller.makecall);
 
-  app.route(`/api/user/call/cancel/:id_call`)
+  app.route(`/api/user/call/cancel`)
     .put(verifikasiUser, api_user.call_controller.cancelcall);
 
 

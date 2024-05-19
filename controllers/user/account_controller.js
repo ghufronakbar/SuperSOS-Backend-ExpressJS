@@ -121,7 +121,7 @@ exports.login = function (req, res) {
         });
       });
     } else {
-      return res.json({ status: 403, message: "Invalid Email or password" });
+      return res.status(403).json({ status: 403, message: "Invalid Email or password" });
     }
   });
 };

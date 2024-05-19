@@ -40,7 +40,7 @@ exports.makecall = function (req, res) {
 
 //CANCEL CALL
 exports.cancelcall = function (req, res) {
-  let id_call = req.params.id_call
+  let id_call = req.body.id_call
   connection.query(`UPDATE calls SET status=1 WHERE id_call=?`,
     [id_call],
     function (error, rows, fields) {

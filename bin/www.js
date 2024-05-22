@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const path = require('path');
 const cors = require("cors");
+require('dotenv').config()
 
 //parse application json
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,6 +22,6 @@ routesUser(app);
 
 app.use('/images/profile', express.static(path.join(__dirname, 'images/profile')));
 
-app.listen(5000, () => {
-  console.log(`Server started on port`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server started on port ${process.env.PORT}`);
 });

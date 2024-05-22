@@ -42,21 +42,46 @@ exports.profileedit = function (req, res) {
     let email = req.body.email
     let phone = req.body.phone
     let id_instances = req.params.id_instances
-    console.log(instances_name)
-    console.log(address)
-    console.log(email)
-    console.log(phone)
-    console.log(id_instances)
-    connection.query(`UPDATE instances SET instances_name=?, address=?, email=?, phone=? WHERE id_instances=?`,
-        [instances_name, address, email, phone, id_instances],
-        function (error, rows, fields) {
-            if (error) {
-                console.log(error)
-            } else {
-                response.ok(rows, res);
-            };
-        }
-    );
+
+    if (!(instances_name, address, email, phone)) {
+        return res.status(400).json({ status: 400, message: "Field tidak boleh kosong" });
+    } else {
+        connection.query(`SELECT * FROM instances WHERE id_instances=?`, id_instances,
+            (error, rows, fields) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+                } else {
+                    const currentEmail = rows[0].email;
+                    connection.query(`SELECT email FROM instances WHERE email=? AND NOT id_instances=?`, [email, id_instances],
+                        (error, r, result) => {
+                            if (error) {
+                                console.log(error)
+                                return res.status(500).json({ status: 500, message: "Internal Server Error" });
+                            } else {
+                                if (r.length > 0) {
+                                    return res.status(400).json({ status: 400, message: "Email sudah terdaftar" });
+                                } else {
+                                    connection.query(`UPDATE instances SET instances_name=?, address=?, phone=?, email=? WHERE id_instances=?`,
+                                        [instances_name, address, phone, email === currentEmail ? currentEmail : email, id_instances],
+                                        function (error, rows, fields) {
+                                            if (error) {
+                                                console.log(error)
+                                                return res.status(500).json({ status: 500, message: "Internal Server Error" });
+                                            } else {
+                                                return res.status(200).json({ status: 200, message: "Edit profile berhasil" });
+                                            }
+                                        }
+                                    );
+
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        );
+    }
 };
 
 
@@ -190,7 +215,7 @@ exports.login = function (req, res) {
         if (error) {
             console.log(error)
         } else {
-          
+
             if (rows.length == 0) {
 
                 res.json({

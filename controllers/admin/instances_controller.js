@@ -13,6 +13,7 @@ exports.instances = function (req, res) {
                i.email, 
                i.status AS instances_status,
                i.type AS instances_type,
+               i.status,
                IF(COUNT(c.id_call) > 0, 
                   GROUP_CONCAT(JSON_OBJECT(
                       'id_call', c.id_call, 
@@ -27,8 +28,7 @@ exports.instances = function (req, res) {
                   )), NULL) AS calls
         FROM instances AS i
         LEFT JOIN calls AS c ON i.id_instances = c.id_instances 
-        LEFT JOIN user AS u ON u.id_user = c.id_user 
-        WHERE i.status=1
+        LEFT JOIN user AS u ON u.id_user = c.id_user         
         GROUP BY i.id_instances
         ORDER BY i.id_instances DESC
     `, 
@@ -123,6 +123,20 @@ exports.instancepending = function (req, res) {
 exports.instanceapprove = function (req, res) {      
     let id_instances = req.params.id_instances
     connection.query(`UPDATE instances SET status=1 WHERE id_instances=?`,[id_instances],
+        function (error, rows, fields) {
+            if (error) {
+                console.log(error)
+            } else {
+                console.log(rows)
+                response.ok(rows, res);
+            };
+        }
+    )
+};
+
+exports.instancesuspend = function (req, res) {      
+    let id_instances = req.params.id_instances
+    connection.query(`UPDATE instances SET status=2 WHERE id_instances=?`,[id_instances],
         function (error, rows, fields) {
             if (error) {
                 console.log(error)

@@ -10,13 +10,13 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //routes
-var routesAdmin = require("./routes/admin");
+var routesAdmin = require("../routes/admin");
 routesAdmin(app);
 
-var routesInstance = require("./routes/instance");
+var routesInstance = require("../routes/instance");
 routesInstance(app);
 
-var routesUser = require("./routes/user");
+var routesUser = require("../routes/user");
 routesUser(app);
 
 app.use('/images/profile', express.static(path.join(__dirname, 'images/profile')));

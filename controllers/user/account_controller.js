@@ -219,7 +219,7 @@ exports.profile = function (req, res) {
               email: user.email,
               phone: user.phone,
               status: user.status,
-              picture: process.env.NGROK_URL + "/images/profile/" +  user.picture,
+              picture: process.env.BASE_URL + "/images/profile/" +  user.picture,
               call_applied: user.call_applied
             }]
           });

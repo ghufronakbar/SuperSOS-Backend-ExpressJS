@@ -189,7 +189,7 @@ exports.register = function (req, res) {
 
 //PROFILE
 exports.profile = function (req, res) {
-  const id_user = req.decoded.id_user
+  const id_user = req.decoded.id_user;
   connection.query(`
       SELECT 
           u.id_user,
@@ -201,14 +201,32 @@ exports.profile = function (req, res) {
           u.picture,
           (SELECT COUNT(*) FROM calls WHERE id_user = u.id_user) AS call_applied
       FROM user AS u
-      WHERE id_user=?
+      WHERE id_user = ?
   `, [id_user],
     function (error, rows, fields) {
       if (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).json({ status: 500, error: "Internal Server Error" });
       } else {
-        response.ok(rows, res);
-      };
+        if (rows.length > 0) {
+          const user = rows[0];
+          res.status(200).json({
+            status: 200,
+            values: [{
+              id_user: user.id_user,
+              fullname: user.fullname,
+              address: user.address,
+              email: user.email,
+              phone: user.phone,
+              status: user.status,
+              picture: process.env.NGROK_URL + "/images/profile/" +  user.picture,
+              call_applied: user.call_applied
+            }]
+          });
+        } else {
+          res.status(404).json({ status: 404, message: "User not found" });
+        }
+      }
     }
   );
 };

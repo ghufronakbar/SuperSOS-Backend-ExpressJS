@@ -20,7 +20,7 @@ routesInstance(app);
 var routesUser = require("../routes/user");
 routesUser(app);
 
-app.use('/images/profile', express.static(path.join(__dirname, 'images/profile')));
+app.use('/images/profile', express.static(path.join(__dirname, '../images/profile')));
 
 app.listen(process.env.PORT, () => {
   console.log(`Server started on port ${process.env.PORT}`);

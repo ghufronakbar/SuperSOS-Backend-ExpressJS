@@ -130,9 +130,7 @@ exports.profilepass = function (req, res) {
     );
 };
 
-
-
-//PROFILE EDIT
+// REGISTER
 exports.register = function (req, res) {
     let instances_name = req.body.instances_name;
     let address = req.body.address;

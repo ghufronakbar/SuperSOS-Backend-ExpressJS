@@ -152,7 +152,7 @@ exports.register = function (req, res) {
                 } else {
                     // Jika email sudah ada, kirimkan pesan kesalahan
                     if (emailRows.length > 0) {
-                        response.error("Email already exists", res);
+                        return res.status(400).json({ status: 400, message: "Email sudah terdaftar!" })
                     } else {
                         // Periksa apakah phone sudah ada dalam database
                         connection.query(`
@@ -165,7 +165,7 @@ exports.register = function (req, res) {
                                 } else {
                                     // Jika phone sudah ada, kirimkan pesan kesalahan
                                     if (phoneRows.length > 0) {
-                                        response.error("Phone already exists", res);
+                                        return res.status(400).json({ status: 400, message: "Nomor telepon sudah terdaftar!" })
                                     } else {
                                         // Jika email dan phone belum ada, lakukan INSERT
                                         connection.query(`
@@ -176,7 +176,7 @@ exports.register = function (req, res) {
                                                     console.log(error);
                                                     response.error("Error occurred while registering", res);
                                                 } else {
-                                                    response.ok("Register successfully", res);
+                                                    return res.status(200).json({ status: 200, message: "Registrasi berhasil!" })
                                                 }
                                             }
                                         );
@@ -189,7 +189,7 @@ exports.register = function (req, res) {
             }
         );
     } else {
-        response.error("Password don't match", res);
+        return res.status(400).json({ status: 400, message: "Password tidak cocok!" })
     }
 };
 

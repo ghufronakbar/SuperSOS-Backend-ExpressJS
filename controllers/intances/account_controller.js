@@ -42,21 +42,46 @@ exports.profileedit = function (req, res) {
     let email = req.body.email
     let phone = req.body.phone
     let id_instances = req.params.id_instances
-    console.log(instances_name)
-    console.log(address)
-    console.log(email)
-    console.log(phone)
-    console.log(id_instances)
-    connection.query(`UPDATE instances SET instances_name=?, address=?, email=?, phone=? WHERE id_instances=?`,
-        [instances_name, address, email, phone, id_instances],
-        function (error, rows, fields) {
-            if (error) {
-                console.log(error)
-            } else {
-                response.ok(rows, res);
-            };
-        }
-    );
+
+    if (!(instances_name, address, email, phone)) {
+        return res.status(400).json({ status: 400, message: "Field tidak boleh kosong" });
+    } else {
+        connection.query(`SELECT * FROM instances WHERE id_instances=?`, id_instances,
+            (error, rows, fields) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(500).json({ status: 500, message: "Internal Server Error" });
+                } else {
+                    const currentEmail = rows[0].email;
+                    connection.query(`SELECT email FROM instances WHERE email=? AND NOT id_instances=?`, [email, id_instances],
+                        (error, r, result) => {
+                            if (error) {
+                                console.log(error)
+                                return res.status(500).json({ status: 500, message: "Internal Server Error" });
+                            } else {
+                                if (r.length > 0) {
+                                    return res.status(400).json({ status: 400, message: "Email sudah terdaftar" });
+                                } else {
+                                    connection.query(`UPDATE instances SET instances_name=?, address=?, phone=?, email=? WHERE id_instances=?`,
+                                        [instances_name, address, phone, email === currentEmail ? currentEmail : email, id_instances],
+                                        function (error, rows, fields) {
+                                            if (error) {
+                                                console.log(error)
+                                                return res.status(500).json({ status: 500, message: "Internal Server Error" });
+                                            } else {
+                                                return res.status(200).json({ status: 200, message: "Edit profile berhasil" });
+                                            }
+                                        }
+                                    );
+
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        );
+    }
 };
 
 
@@ -105,9 +130,7 @@ exports.profilepass = function (req, res) {
     );
 };
 
-
-
-//PROFILE EDIT
+// REGISTER
 exports.register = function (req, res) {
     let instances_name = req.body.instances_name;
     let address = req.body.address;
@@ -129,7 +152,7 @@ exports.register = function (req, res) {
                 } else {
                     // Jika email sudah ada, kirimkan pesan kesalahan
                     if (emailRows.length > 0) {
-                        response.error("Email already exists", res);
+                        return res.status(400).json({ status: 400, message: "Email sudah terdaftar!" })
                     } else {
                         // Periksa apakah phone sudah ada dalam database
                         connection.query(`
@@ -142,7 +165,7 @@ exports.register = function (req, res) {
                                 } else {
                                     // Jika phone sudah ada, kirimkan pesan kesalahan
                                     if (phoneRows.length > 0) {
-                                        response.error("Phone already exists", res);
+                                        return res.status(400).json({ status: 400, message: "Nomor telepon sudah terdaftar!" })
                                     } else {
                                         // Jika email dan phone belum ada, lakukan INSERT
                                         connection.query(`
@@ -153,7 +176,7 @@ exports.register = function (req, res) {
                                                     console.log(error);
                                                     response.error("Error occurred while registering", res);
                                                 } else {
-                                                    response.ok("Register successfully", res);
+                                                    return res.status(200).json({ status: 200, message: "Registrasi berhasil!" })
                                                 }
                                             }
                                         );
@@ -166,7 +189,7 @@ exports.register = function (req, res) {
             }
         );
     } else {
-        response.error("Password don't match", res);
+        return res.status(400).json({ status: 400, message: "Password tidak cocok!" })
     }
 };
 
@@ -190,7 +213,7 @@ exports.login = function (req, res) {
         if (error) {
             console.log(error)
         } else {
-          
+
             if (rows.length == 0) {
 
                 res.json({

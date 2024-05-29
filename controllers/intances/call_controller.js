@@ -42,7 +42,7 @@ exports.calls = function (req, res) {
                         address: row.address,
                         phone: row.phone,
                         email: row.email,
-                        picture: row.picture
+                        picture: process.env.BASE_URL + `/images/profile/`+row.picture,
                     });
                     if (row.id_instances) {
                         groupedData[row.id_call].instances.push({
@@ -109,7 +109,7 @@ exports.callid = function (req, res) {
                         address: row.address,
                         phone: row.phone,
                         email: row.email,
-                        picture: row.picture
+                        picture: process.env.BASE_URL + `/images/profile/`+row.picture,
                     });
                     if (row.id_instances) {
                         groupedData[row.id_call].instances.push({
@@ -173,7 +173,7 @@ exports.callpending = function (req, res) {
                         address: row.address,
                         phone: row.phone,
                         email: row.email,
-                        picture: row.picture
+                        picture: process.env.BASE_URL + `/images/profile/`+row.picture,
                     });
                     if (row.id_instances) {
                         groupedData[row.id_call].instances.push({
@@ -262,7 +262,7 @@ exports.callhistory = function (req, res) {
                         address: row.address,
                         phone: row.phone,
                         email: row.email,
-                        picture: row.picture
+                        picture: process.env.BASE_URL + `/images/profile/`+row.picture,
                     });
                     if (row.id_instances) {
                         groupedData[row.id_call].instances.push({

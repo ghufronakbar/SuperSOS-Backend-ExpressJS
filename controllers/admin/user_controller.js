@@ -37,11 +37,13 @@ exports.user = function (req, res) {
                         };
                     }
                     if (row.id_call) { // Check if call exists
+                        let url_google_map = `http://maps.google.com/maps/search/?api=1&query=${row.latitude}%2C${row.longitude}`
                         groupedData[row.id_user].calls.push({
                             id_call: row.id_call,
                             message: row.message,
                             latitude: row.latitude,
                             longitude: row.longitude,
+                            url_google_map,
                             applied_at: row.applied_at,
                             answered_at: row.answered_at,
                             call_status: row.call_status,
@@ -96,11 +98,13 @@ exports.userid = function (req, res) {
                         };
                     }
                     if (row.id_call) { // Check if call exists
+                        let url_google_map = `http://maps.google.com/maps/search/?api=1&query=${row.latitude}%2C${row.longitude}`
                         groupedData[row.id_user].calls.push({
                             id_call: row.id_call,
                             message: row.message,
                             latitude: row.latitude,
                             longitude: row.longitude,
+                            url_google_map,
                             applied_at: row.applied_at,
                             answered_at: row.answered_at,
                             call_status: row.call_status,

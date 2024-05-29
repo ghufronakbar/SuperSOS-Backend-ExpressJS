@@ -23,11 +23,13 @@ exports.calls = function (req, res) {
                 let groupedData = {};
                 rows.forEach(row => {
                     if (!groupedData[row.id_call]) {
+                        let url_google_map = `http://maps.google.com/maps/search/?api=1&query=${row.latitude}%2C${row.longitude}`
                         groupedData[row.id_call] = {
                             id_call: row.id_call,
                             message: row.message,
                             latitude: row.latitude,
                             longitude: row.longitude,
+                            url_google_map,
                             applied_at: row.applied_at,
                             answered_at: row.answered_at,
                             status: row.status,
@@ -90,11 +92,13 @@ exports.callid = function (req, res) {
                 let groupedData = {};
                 rows.forEach(row => {
                     if (!groupedData[row.id_call]) {
+                        let url_google_map = `http://maps.google.com/maps/search/?api=1&query=${row.latitude}%2C${row.longitude}`
                         groupedData[row.id_call] = {
                             id_call: row.id_call,
                             message: row.message,
                             latitude: row.latitude,
                             longitude: row.longitude,
+                            url_google_map,
                             applied_at: row.applied_at,
                             answered_at: row.answered_at,
                             status: row.status,
@@ -154,11 +158,13 @@ exports.callpending = function (req, res) {
                 let groupedData = {};
                 rows.forEach(row => {
                     if (!groupedData[row.id_call]) {
+                        let url_google_map = `http://maps.google.com/maps/search/?api=1&query=${row.latitude}%2C${row.longitude}`
                         groupedData[row.id_call] = {
                             id_call: row.id_call,
                             message: row.message,
                             latitude: row.latitude,
                             longitude: row.longitude,
+                            url_google_map,
                             applied_at: row.applied_at,
                             answered_at: row.answered_at,
                             status: row.status,
@@ -243,11 +249,13 @@ exports.callhistory = function (req, res) {
                 let groupedData = {};
                 rows.forEach(row => {
                     if (!groupedData[row.id_call]) {
+                        let url_google_map = `http://maps.google.com/maps/search/?api=1&query=${row.latitude}%2C${row.longitude}`
                         groupedData[row.id_call] = {
                             id_call: row.id_call,
                             message: row.message,
                             latitude: row.latitude,
                             longitude: row.longitude,
+                            url_google_map,
                             applied_at: row.applied_at,
                             answered_at: row.answered_at,
                             status: row.status,

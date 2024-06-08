@@ -206,8 +206,6 @@ exports.login = function (req, res) {
     var query = "SELECT id_instances, instances_name, address, email, phone, status, type FROM ?? WHERE ??=? AND ??=?";
     var table = ["instances", "password", md5(post.password), "email", post.email];
 
-    console.log(post)
-
     query = mysql.format(query, table);
     connection.query(query, function (error, rows) {
         if (error) {
@@ -233,7 +231,7 @@ exports.login = function (req, res) {
                 } else {
 
                     var token = jwt.sign({ rows }, config.secret, {
-                        expiresIn: 1440
+                        expiresIn: 1440 * 10000
                     });
                     let id_instances = rows[0].id_instances;
 

@@ -18,6 +18,8 @@ const verifikasiInstance = (req, res, next) => {
         const currentTime = Math.floor(Date.now() / 1000); // Waktu saat ini dalam detik
         if (decoded.exp && decoded.exp < currentTime) {
           return res.status(401).send({ auth: false, message: "Token telah kadaluarsa!" });
+        }else if (!decoded.rows[0].id_instances){
+          return res.status(401).send({ auth: false, message: "Anda bukan instansi" });
         }
 
         req.decoded = decoded; // Menyimpan data decoded ke dalam req untuk penggunaan selanjutnya

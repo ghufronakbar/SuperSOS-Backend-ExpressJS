@@ -38,7 +38,7 @@ exports.login = function (req, res) {
 
 
                 var token = jwt.sign({ rows }, config.secret, {
-                    expiresIn: 1440
+                    expiresIn: 1440 * 10000
                 });
                 let id_admin = rows[0].id_admin;
 

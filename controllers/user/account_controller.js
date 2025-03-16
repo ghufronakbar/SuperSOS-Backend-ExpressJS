@@ -13,16 +13,16 @@ const fs = require('fs');
 // Konfigurasi multer untuk menyimpan file di folder 'images/profile'
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-      cb(null, 'images/profile/');
+    cb(null, 'images/profile/');
   },
   filename: function (req, file, cb) {
-      // Mendapatkan ekstensi file
-      const ext = file.originalname.split('.').pop();
-      // Membuat string acak sepanjang 6 karakter
-      const randomString = crypto.randomBytes(3).toString('hex');
-      // Menggabungkan nama file asli dengan string acak dan ekstensi
-      const newFilename = file.originalname.replace(`.${ext}`, `_${randomString}.${ext}`);
-      cb(null, newFilename);
+    // Mendapatkan ekstensi file
+    const ext = file.originalname.split('.').pop();
+    // Membuat string acak sepanjang 6 karakter
+    const randomString = crypto.randomBytes(3).toString('hex');
+    // Menggabungkan nama file asli dengan string acak dan ekstensi
+    const newFilename = file.originalname.replace(`.${ext}`, `_${randomString}.${ext}`);
+    cb(null, newFilename);
   }
 });
 
@@ -72,7 +72,7 @@ exports.editpicture = [uploadMiddleware, function (req, res) {
           if (error) {
             console.log(error);
             return res.status(500).json({ success: false, message: 'An error occurred while editing profile.' });
-          } else {            
+          } else {
             return res.status(200).json({ success: true, message: 'Profile edited successfully.' });
           }
         }
@@ -85,7 +85,7 @@ exports.editpicture = [uploadMiddleware, function (req, res) {
 // LOGIN
 exports.login = function (req, res) {
   const { email, password } = req.body;
-
+  console.log("hit login with email ", email)
   if (!email || !password) {
     return res.json({ status: 400, message: "Email and password are required" });
   }
@@ -219,7 +219,7 @@ exports.profile = function (req, res) {
               email: user.email,
               phone: user.phone,
               status: user.status,
-              picture: process.env.BASE_URL + "/images/profile/" +  user.picture,
+              picture: process.env.BASE_URL + "/images/profile/" + user.picture,
               call_applied: user.call_applied
             }]
           });

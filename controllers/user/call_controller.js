@@ -12,6 +12,7 @@ exports.index = function (req, res) {
 
 //MAKE CALL
 exports.makecall = function (req, res) {
+  console.log("hitted ", req.body)
   let message = req.body.message
   let latitude = req.body.latitude
   let longitude = req.body.longitude

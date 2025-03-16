@@ -30,8 +30,9 @@ exports.makecall = function (req, res) {
     function (error, rows, fields) {
       if (error) {
         console.log(error)
+        return res.status(500).json({ status: 500, message: "Internal Server Error", error: error });
       } else {
-        response.ok(rows, res);
+        return res.status(200).send(rows, res);
       };
     }
   )

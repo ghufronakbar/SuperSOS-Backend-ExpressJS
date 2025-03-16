@@ -10,6 +10,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    "status": "OK",
+    "message": "Welcome to SuperSos API"
+  });
+}
+);
+
 
 //routes
 var routesAdmin = require("../routes/admin");
